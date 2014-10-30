@@ -4,10 +4,10 @@ Capture cam;
 
 PImage edges;
 
-float maxDist = 16.0;
+float maxDist = 10.0;
 
-color edgeColor = color(0,255);
-color fillColor = color(255,0);
+color edgeColor = color(0);
+color fillColor = color(255);
 
 void captureEvent(Capture c) {
   c.read();
@@ -23,9 +23,9 @@ void setup() {
 
 void draw() {
   // draw background
-  background(0);
-  tint(255, 126);
-  image(cam,0,0);
+  //background(255);
+  //tint(255, 126);
+  //image(cam,0,0);
 
   cam.loadPixels();
   //edges.loadPixels();
@@ -65,32 +65,67 @@ void draw() {
   
   // new part starts here...
   
-  // edges.loadPixels();
-  // for (int y=1; y<edges.height-1; y++) {
-  //   for (int x=1; x<edges.width-1; x++) {
-  //     boolean isolated = false;
-  //     color k0 = edges.pixels[x + y * edges.width];
-  //     color k1 = edges.pixels[(x+1) + (y) * edges.width];
-  //     color k2 = edges.pixels[(x+1) + (y+1) * edges.width];
-  //     color k4 = edges.pixels[x + (y+1) * edges.width];
-  //     color[] npk = {k1, k2, k4};
-  //     if (k0 == edgeColor) {
-  //       for (int i=0; i<npk.length; i++) {
-  //         if (npk[i] == fillColor) isolated = true;
-  //       }
-  //       if (isolated) edges.pixels[x+y*edges.width] = fillColor;
-  //     } 
-  //     // else if (k0 == fillColor) {
-  //     //   for (int i=0; i<npk.length; i++) {
-  //     //     if (npk[i] == edgeColor) isolated = true;
-  //     //   }
-  //     //   if (isolated) edges.pixels[x+y*edges.width] = edgeColor;
-  //     // }
-  //   }
-  // }
-  // edges.updatePixels();
+  edges.loadPixels();
+  for (int y=1; y<edges.height-1; y++) {
+    for (int x=1; x<edges.width-1; x++) {
+      boolean isolated = false;      
+      color k0 = cam.pixels[x + y * cam.width];
+      color k1 = cam.pixels[(x-1) + (y-1) * cam.width];
+      color k2 = cam.pixels[x + (y-1) * cam.width];
+      color k3 = cam.pixels[(x+1) + (y-1) * cam.width];
+      color k4 = cam.pixels[(x-1) + y * cam.width];
+      color k5 = cam.pixels[(x+1) + y * cam.width];
+      color k6 = cam.pixels[(x-1) + (y+1) * cam.width];
+      color k7 = cam.pixels[x + (y+1) * cam.width];
+      color k8 = cam.pixels[(x+1) + (y+1) * cam.width];
+      
+      color[] npk = {k1, k2, k3, k4, k5, k6, k7, k8};
+      if (k0 == edgeColor) {
+        for (int i=0; i<npk.length; i++) {
+          if (npk[i] == fillColor) isolated = true;
+        }
+        if (isolated) edges.pixels[x+y*edges.width] = fillColor;
+      } 
+    }
+  }
+  edges.updatePixels();
   
   // ...new part ends here
   
-  image(edges, 0, 0);
+  // extra new part begins here...
+  
+  // edges.loadPixels();
+  // for (int y=5; y<edges.height-5; y++) {
+  //   for (int x=5; x<edges.width-5; x++) {
+      
+  //     color l0 = edges.pixels[x + y * edges.width];
+  //     color l1 = edges.pixels[(x+5) + y * edges.width];
+  //     color l2 = edges.pixels[x + (y+5) * edges.width];
+  //     if (l0 == edgeColor && l1 == edgeColor && l2 == edgeColor) {
+        
+  //       stroke(0);
+  //       noFill();
+  //       ellipse(x+2.5, y+2.5, 5, 5);
+  //       // fill(0);
+  //       // noStroke();
+  //       // rect(x, y, 3, 3);
+  //       // noFill();
+  //       // beginShape();
+  //       // vertex(x, y-1);
+  //       // vertex(x-1, y-1);
+  //       // vertex(x-1, y);
+  //       // endShape();
+  //     }
+  //     // else if (l0 == edgeColor && l2 == edgeColor) {
+  //     //   stroke(0);
+  //     //   noFill();
+  //     //   line(x, y, x, y+5);
+  //     // }
+      
+  //   }
+  // }
+  
+  // ...extra new part ends here
+  scale(-1, 1);
+  image(edges, -1*edges.width, 0);
 }
